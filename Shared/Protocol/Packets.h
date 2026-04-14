@@ -1,5 +1,6 @@
 #pragma once
-#include "PacketHeader.h"
+#include "Protocol/PacketHeader.h"
+#include "Core/Types.h"
 #include <vector>
 #include <string>
 #include <cstring>
@@ -28,7 +29,7 @@ public:
 
     PacketWriter& WriteString(const std::string& str)
     {
-        uint16_t len = static_cast<uint16_t>(str.size());
+        uint16 len = static_cast<uint16>(str.size());
         Write(len);
         _buffer.insert(_buffer.end(), str.begin(), str.end());
         return *this;
@@ -38,11 +39,11 @@ public:
     const uint8_t* GetData()
     {
         reinterpret_cast<PacketHeader*>(_buffer.data())->size =
-            static_cast<uint16_t>(_buffer.size());
+            static_cast<uint16>(_buffer.size());
         return _buffer.data();
     }
 
-    uint16_t GetSize() const { return static_cast<uint16_t>(_buffer.size()); }
+    uint16 GetSize() const { return static_cast<uint16>(_buffer.size()); }
 
 private:
     std::vector<uint8_t> _buffer;
@@ -52,7 +53,7 @@ private:
 class PacketReader
 {
 public:
-    PacketReader(const uint8_t* buffer, uint16_t size)
+    PacketReader(const uint8_t* buffer, uint16 size)
         : _buffer(buffer), _size(size), _cursor(PACKET_HEADER_SIZE)
     {}
 
@@ -74,7 +75,7 @@ public:
 
     bool ReadString(std::string& out)
     {
-        uint16_t len = 0;
+        uint16 len = 0;
         if (!Read(len))
             return false;
 
@@ -90,6 +91,6 @@ public:
 
 private:
     const uint8_t* _buffer;
-    uint16_t       _size;
-    uint16_t       _cursor;
+    uint16       _size;
+    uint16       _cursor;
 };
