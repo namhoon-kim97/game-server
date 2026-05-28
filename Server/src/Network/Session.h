@@ -47,7 +47,7 @@ protected:
 
     // ProcessPackets에서 완전한 패킷(헤더 포함) 수신 시 호출
     // Day 3에서 PacketDispatcher::Dispatch로 교체
-    virtual void OnRecv(BYTE* buffer, int32 len) {}
+    virtual void OnRecv([[maybe_unused]] BYTE* buffer, [[maybe_unused]] int32 len) {}
 
 private:
     void IssueSend();

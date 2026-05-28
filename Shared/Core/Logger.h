@@ -6,8 +6,9 @@
 #include <thread>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 #include <chrono>
-#include <format>
+#include <cstdio>
 
 enum class LogLevel { DEBUG, INFO, WARN, ERR };
 
@@ -126,8 +127,8 @@ private:
     bool                    _running = true;
 };
 
-// 사용 매크로 — __FILE__, __LINE__ 자동 삽입
-#define LOG_DEBUG(msg) Logger::Instance().Log(LogLevel::DEBUG, __FILE__, __LINE__, msg)
-#define LOG_INFO(msg)  Logger::Instance().Log(LogLevel::INFO,  __FILE__, __LINE__, msg)
-#define LOG_WARN(msg)  Logger::Instance().Log(LogLevel::WARN,  __FILE__, __LINE__, msg)
-#define LOG_ERR(msg)   Logger::Instance().Log(LogLevel::ERR,   __FILE__, __LINE__, msg)
+// 사용 매크로 — printf 스타일 포맷 지원, __FILE__/__LINE__ 자동 삽입
+#define LOG_DEBUG(fmt, ...) do { char _buf[512]; snprintf(_buf, sizeof(_buf), fmt, ##__VA_ARGS__); Logger::Instance().Log(LogLevel::DEBUG, __FILE__, __LINE__, _buf); } while(0)
+#define LOG_INFO(fmt, ...)  do { char _buf[512]; snprintf(_buf, sizeof(_buf), fmt, ##__VA_ARGS__); Logger::Instance().Log(LogLevel::INFO,  __FILE__, __LINE__, _buf); } while(0)
+#define LOG_WARN(fmt, ...)  do { char _buf[512]; snprintf(_buf, sizeof(_buf), fmt, ##__VA_ARGS__); Logger::Instance().Log(LogLevel::WARN,  __FILE__, __LINE__, _buf); } while(0)
+#define LOG_ERR(fmt, ...)   do { char _buf[512]; snprintf(_buf, sizeof(_buf), fmt, ##__VA_ARGS__); Logger::Instance().Log(LogLevel::ERR,   __FILE__, __LINE__, _buf); } while(0)

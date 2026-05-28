@@ -9,6 +9,9 @@ add_compile_definitions(
     _WIN32_WINNT=0x0601
     NOMINMAX
     WIN32_LEAN_AND_MEAN
+    UNICODE
+    _UNICODE
+    _WINSOCK_DEPRECATED_NO_WARNINGS
 )
 
 # /W4 /WX — 경고를 오류로, /utf-8 — 소스 인코딩

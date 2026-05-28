@@ -21,7 +21,8 @@ bool IOCPCore::Dispatch(uint32_t timeoutMs)
     ULONG_PTR   key       = 0;
     OVERLAPPED* overlapped = nullptr;
 
-    BOOL ret = GetQueuedCompletionStatus(_hcp, &bytes, &key, &overlapped, timeoutMs);
+    // ret == FALSE + overlapped != nullptr → I/O 실패 (연결 끊김 등) — bytes=0으로 Dispatch에서 처리
+    GetQueuedCompletionStatus(_hcp, &bytes, &key, &overlapped, timeoutMs);
 
     if (overlapped == nullptr)
         return false; // 타임아웃 또는 오류

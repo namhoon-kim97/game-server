@@ -1,5 +1,6 @@
 #include "Network/Listener.h"
 #include "Network/Session.h"
+#include "Core/Logger.h"
 #include <WS2tcpip.h>
 
 Listener::~Listener()
@@ -83,7 +84,7 @@ bool Listener::RegisterAccept(AcceptEvent* event)
     return true;
 }
 
-void Listener::Dispatch(IOCPEvent* event, DWORD bytesTransferred)
+void Listener::Dispatch(IOCPEvent* event, [[maybe_unused]] DWORD bytesTransferred)
 {
     AcceptEvent* acceptEvent = static_cast<AcceptEvent*>(event);
     HandleAccept(acceptEvent);
@@ -100,5 +101,24 @@ void Listener::HandleAccept(AcceptEvent* event)
         return;
     }
 
-    // TODO: Session 생성 및 IOCPCore 등록 (Session 구현 후 연결)
+    // Session 생성 및 초기화
+    auto session = std::make_shared<Session>();
+    uint32 idx   = _nextSessionIdx.fetch_add(1);
+    session->Init(event->clientSocket, idx);
+    event->clientSocket = INVALID_SOCKET;  // Session이 소켓 소유권 가져감
+
+    // IOCP completion port에 소켓 등록
+    if (!_iocpCore->Register(session.get()))
+    {
+        LOG_ERR("Listener: IOCP Register failed (sessionIdx=%u)", idx);
+        session->Close();
+        return;
+    }
+
+    // 첫 recv 등록
+    session->IssueRecv();
+
+    // GameServer 등 상위 레이어에 세션 전달
+    if (_onAccept)
+        _onAccept(session);
 }

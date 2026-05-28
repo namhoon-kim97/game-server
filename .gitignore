@@ -4,8 +4,8 @@ migrate/
 # Claude Code instructions
 CLAUDE.md
 
-# 개발 로드맵 (로컬용)
-roadmap.html
+# HTML 파일 (로컬용)
+*.html
 
 # CMake
 build/
